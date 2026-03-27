@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arc Browser</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <!-- Window drag region + controls -->
+      <div class="sidebar-header" id="sidebarHeader">
+        <div class="window-controls" id="windowControls">
+          <button class="wc-btn wc-close" id="btnClose" title="Close"></button>
+          <button class="wc-btn wc-minimize" id="btnMinimize" title="Minimize"></button>
+          <button class="wc-btn wc-maximize" id="btnMaximize" title="Maximize"></button>
+        </div>
+        <button class="sidebar-toggle-btn" id="sidebarToggle" title="Toggle Sidebar (Ctrl+B)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <path d="M9 3v18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Address / Search Bar -->
+      <div class="address-container" id="addressContainer">
+        <div class="address-bar-wrapper" id="addressBarWrapper">
+          <div class="address-icon" id="securityIcon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <input
+            type="text"
+            id="addressBar"
+            class="address-bar"
+            placeholder="Search or enter URL..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="address-go-btn" id="addressGoBtn" title="Go">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+        <div id="suggestions" class="suggestions"></div>
+      </div>
+
+      <!-- Pinned Tabs Section -->
+      <div class="tabs-section" id="pinnedSection" style="display:none;">
+        <div class="section-label">Pinned</div>
+        <div id="pinnedTabs" class="tabs-list pinned-tabs-list"></div>
+      </div>
+
+      <!-- Divider -->
+      <div class="section-divider" id="pinnedDivider" style="display:none;"></div>
+
+      <!-- Regular Tabs Section -->
+      <div class="tabs-section tabs-section-main">
+        <div class="section-label">Tabs</div>
+        <div id="tabsList" class="tabs-list" id="tabsList"></div>
+      </div>
+
+      <!-- Sidebar bottom controls -->
+      <div class="sidebar-footer">
+        <button class="footer-btn new-tab-btn" id="newTabBtn" title="New Tab (Ctrl+T)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span class="footer-btn-label">New Tab</span>
+        </button>
+        <div class="footer-right">
+          <button class="footer-icon-btn" id="splitViewBtn" title="Split View (Ctrl+Shift+D)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M12 3v18"/>
+            </svg>
+          </button>
+          <button class="footer-icon-btn" id="settingsBtn" title="Settings">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Resize handle -->
+    <div id="sidebarResizer" class="sidebar-resizer"></div>
+
+    <!-- Main content area -->
+    <main id="contentArea" class="content-area">
+      <!-- Navigation bar -->
+      <div class="nav-bar" id="navBar">
+        <div class="nav-controls">
+          <button class="nav-btn" id="backBtn" title="Back (Alt+Left)" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          <button class="nav-btn" id="forwardBtn" title="Forward (Alt+Right)" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <button class="nav-btn" id="reloadBtn" title="Reload (Ctrl+R)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="reloadIcon">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+          </button>
+          <button class="nav-btn" id="homeBtn" title="Home (Alt+Home)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Inline address bar for nav (secondary, shows current URL) -->
+        <div class="nav-address-wrapper" id="navAddressWrapper">
+          <div class="nav-address-inner" id="navAddressDisplay">
+            <span class="nav-url-text" id="navUrlText">New Tab</span>
+          </div>
+        </div>
+
+        <div class="nav-right-controls">
+          <button class="nav-btn" id="zoomOutBtn" title="Zoom Out">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M8 11h6"/>
+            </svg>
+          </button>
+          <button class="nav-btn" id="zoomInBtn" title="Zoom In">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/>
+            </svg>
+          </button>
+          <button class="nav-btn" id="devToolsBtn" title="Developer Tools (F12)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 18 22 12 16 6"/>
+              <polyline points="8 6 2 12 8 18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab content container -->
+      <div class="tab-contents" id="tabContents">
+        <!-- Loading bar -->
+        <div class="loading-bar" id="loadingBar"></div>
+        <!-- Webviews injected here by renderer.js -->
+      </div>
+
+      <!-- Split view container -->
+      <div class="split-view-container" id="splitViewContainer" style="display:none;">
+        <div class="split-pane" id="splitPane1"></div>
+        <div class="split-handle" id="splitHandle"></div>
+        <div class="split-pane" id="splitPane2"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Context menu -->
+  <div id="contextMenu" class="context-menu" style="display:none;">
+    <div id="contextMenuItems"></div>
+  </div>
+
+  <!-- Tab sleep overlay template (cloned per tab) -->
+  <template id="sleepOverlayTemplate">
+    <div class="sleep-overlay">
+      <div class="sleep-content">
+        <div class="sleep-moon">🌙</div>
+        <div class="sleep-title"></div>
+        <div class="sleep-subtitle">Tab is sleeping to save memory</div>
+        <button class="sleep-wake-btn">Wake Up</button>
+      </div>
+    </div>
+  </template>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
