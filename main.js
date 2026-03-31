@@ -27,7 +27,11 @@ function createWindow() {
     icon: path.join(__dirname, 'assets', 'icon.png'),
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
+  if (process.env.VITE_DEV_SERVER_URL) {
+    mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+  } else {
+    mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+  }
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();

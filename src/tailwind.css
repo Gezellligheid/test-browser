@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme CSS variables (space-separated RGB channels for rgb(var / alpha) syntax) ── */
+:root {
+  --color-app:       15  15  35;    /* #0f0f23 */
+  --color-app2:      26  26  53;    /* #1a1a35 */
+  --color-surface:   30  30  56;    /* #1e1e38 */
+  --color-surface2:  37  37  64;    /* #252540 */
+  --color-accent:   108  99  255;   /* #6c63ff */
+  --color-accent2:  139 124  248;   /* #8b7cf8 */
+  --color-accent3:  167 139  250;   /* #a78bfa */
+  --color-fg:       255 255  255;   /* white  — flips to dark in light mode */
+}
+
+/* ── Custom base styles ── */
+@layer base {
+  html, body {
+    @apply h-full overflow-hidden bg-app text-white;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-white/10 rounded; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-white/20; }
+}
+
+/* ── Electron frameless window ── */
+.drag-region    { -webkit-app-region: drag; }
+.no-drag        { -webkit-app-region: no-drag; }
+
+/* ── Tab pane visibility ──
+   Absolutely fill the relative container so the webview always
+   gets the correct height regardless of how flex resolves. */
+.tab-pane {
+  display: none;
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+}
+.tab-pane.active,
+.tab-pane.split-active {
+  display: flex;
+}
+
+/* ── Webview fills its pane ── */
+webview {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+/* ── Loading bar ── */
+@keyframes loadingProgress {
+  0%   { width: 0%;   opacity: 1; }
+  60%  { width: 75%;  opacity: 1; }
+  90%  { width: 90%;  opacity: 1; }
+  100% { width: 100%; opacity: 0; }
+}
+.loading-bar-active {
+  animation: loadingProgress 2.5s ease-in-out forwards;
+}
+
+/* ── New-tab slide-in ── */
+@keyframes slideInLeft {
+  from { transform: translateX(-8px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+.slide-in { animation: slideInLeft 0.15s ease forwards; }
+
+/* ── Floating orbs (newtab) ── */
+@keyframes floatOrb {
+  0%, 100% { transform: translate(0, 0)     scale(1); }
+  33%       { transform: translate(20px, -30px) scale(1.05); }
+  66%       { transform: translate(-15px, 20px) scale(0.97); }
+}
+.float-orb { animation: floatOrb 8s ease-in-out infinite; }

@@ -5,34 +5,52 @@
   "author": "Elias",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder"
+    "dev":          "concurrently -k \"vite\" \"wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .\"",
+    "build":        "vite build",
+    "start":        "electron .",
+    "preview":      "npm run build && electron .",
+    "pack":         "npm run build && electron-builder",
+    "release":      "npm run build && electron-builder --publish never"
   },
-  "dependencies": {},
+  "dependencies": {
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21"
+  },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "autoprefixer": "^10.4.19",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
     "electron": "^28.0.0",
-    "electron-builder": "^24.0.0"
+    "electron-builder": "^24.0.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "vite": "^5.2.0",
+    "wait-on": "^9.0.4"
   },
   "build": {
     "appId": "com.arc-browser.app",
     "productName": "Arc Browser",
     "directories": {
-      "output": "dist"
+      "output": "release"
     },
     "files": [
       "main.js",
       "preload.js",
-      "src/**/*",
+      "dist/**/*",
       "assets/**/*"
     ],
     "win": {
-      "target": "nsis"
+      "target": [
+        { "target": "nsis",     "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "assets/icon.png"
     },
-    "mac": {
-      "target": "dmg"
-    },
-    "linux": {
-      "target": "AppImage"
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
     }
   }
 }
